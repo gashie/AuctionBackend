@@ -1,0 +1,32 @@
+{
+  "name": "auctionbknd",
+  "version": "1.0.0",
+  "description": "scopic task backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "NODE_ENV=production node server",
+    "dev": "nodemon server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gashie/AuctionBackend.git"
+  },
+  "keywords": [
+    "antique"
+  ],
+  "author": "Richard Baffoe",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gashie/AuctionBackend/issues"
+  },
+  "homepage": "https://github.com/gashie/AuctionBackend#readme",
+  "dependencies": {
+    "@hapi/joi": "^17.1.1",
+    "camelcase-keys": "^7.0.1",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.2",
+    "morgan": "^1.10.0",
+    "mysql": "^2.18.1",
+    "nodemon": "^2.0.15"
+  }
+}
