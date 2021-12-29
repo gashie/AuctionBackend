@@ -2,7 +2,7 @@ const Joi = require("@hapi/joi");
 
 const schema = {
   find: Joi.object({
-    id: Joi.number().required().label('ID'),
+    id: Joi.any().required().label('ID'),
 
   }),
   createcategory: Joi.object({

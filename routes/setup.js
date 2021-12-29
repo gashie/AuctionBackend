@@ -39,7 +39,7 @@ router.route("/delcategory").delete(singleRecordVal,RemoveCategory);
 
 //routes for listings
 router.route("/viewlisting").get(ViewAuction);
-router.route("/singlelisting").get(singleRecordVal,SingleAuction);
+router.route("/singlelisting").post(singleRecordVal,SingleAuction);
 router.route("/updatelisting").put(updateListingVal,UpdateAuction);
 router.route("/dellisting").delete(singleRecordVal,RemoveAuction);
 

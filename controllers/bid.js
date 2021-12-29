@@ -4,14 +4,13 @@ const camelcaseKeys = require("camelcase-keys");
 const asynHandler = require("../middleware/async");
 
 exports.CreateBid = asynHandler(async (req, res, next) => {
+  
   let dbresult = await Bid.FindListing(req.body.auctionID);
   const newData = {
     bidderID: req.body.bidderID,
     auctionID: req.body.auctionID,
     bidAmount: req.body.bidAmount,
-    auctionID: req.body.auctionID,
-    dateTimeOfBid: req.body.dateTimeOfBid,
-    bidType: req.body.bidType,
+    bidType: req.body.remember == true ? 1 : 0,
   };
 
   //check if auction is within time
@@ -31,7 +30,7 @@ exports.CreateBid = asynHandler(async (req, res, next) => {
     //check if bid amount is equal to or more or is equal to or more than high bid amount for auction
 
     //sum current bids and make sure bid amount is not less than that
-    let sumresult = await Bid.SumBid(req.body.auctionID);
+    let sumresult = await Bid.mySumBid(req.body.auctionID,req.body.bidderID);
     let sumamount = sumresult.totalamount;
     if (amount <= sumamount) {
       res
@@ -60,10 +59,30 @@ exports.CreateBid = asynHandler(async (req, res, next) => {
           res.status(500).json({ Status: 0, Message: "Error Saving Record" });
         }
       } else {
-        //save and still show auction
-
+    
+       
         let result = await Bid.create(newData);
+            //save and still show auction or still below maxbid
+            let autobid = dbresult.autoBid
+            let autobiduser = dbresult.autoBidUser
+    
+            if(autobid){
+              console.log(dbresult.autoBid);
+              newData.bidderID = autobiduser
+              newData.bidType = 1
+              newData.bidAmount= req.body.bidAmount +1
+              let pushauto = await Bid.create(newData);
+            }
         if (result.affectedRows === 1) {
+          if(req.body.remember){
+            const setAutoBid = {
+              autoBid: 1,
+              autoBidUser: req.body.bidderID,
+              updatedAt: new Date().toISOString().slice(0, 19).replace("T", " "),
+            };
+  
+            let autobidresult = await Auction.update(setAutoBid, req.body.auctionID); //set auto bid update on listings
+          }
           res.status(200).json({
             Status: 1,
             Message: `Record Created Successfully`,

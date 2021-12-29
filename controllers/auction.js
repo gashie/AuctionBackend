@@ -1,4 +1,5 @@
 const Auction = require("../model/Auction");
+const Bid = require("../model/Bid");
 const Categories = require("../model/Categories");
 const camelcaseKeys = require("camelcase-keys");
 const asynHandler = require("../middleware/async");
@@ -88,6 +89,7 @@ exports.RemoveAuction = asynHandler(async (req, res, next) => {
 
 exports.SingleAuction = asynHandler(async (req, res, next) => {
   let id = req.body.id;
+ 
   let dbresult = await Auction.Find(id);
   if (!dbresult) {
     return res.status(200).json({
@@ -98,7 +100,14 @@ exports.SingleAuction = asynHandler(async (req, res, next) => {
   }
 
   let { title } = await Categories.Find(dbresult.catID);
+  let sumresult = await Bid.GetLatestBid(dbresult.id);
+  let sumbidresult = await Bid.SumBid(dbresult.id);
+  let allbids = await Bid.all(dbresult.id);
+ console.log(allbids);
   dbresult.catname = title;
+  dbresult.totalBid = sumbidresult.totalamount ?sumbidresult.totalamount : 0
+  dbresult.lastBidAmount = sumresult ?sumresult.bidAmount : 0
+  dbresult.bids = allbids
   dbresult;
   res.json({
     Status: 1,
